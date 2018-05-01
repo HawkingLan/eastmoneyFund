@@ -1,0 +1,26 @@
+{
+  "name": "eastmoney_fund",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HawkingLan/eastmoneyFund.git"
+  },
+  "keywords": [
+    "eastmoney",
+    "fund"
+  ],
+  "author": "Lan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HawkingLan/eastmoneyFund/issues"
+  },
+  "homepage": "https://github.com/HawkingLan/eastmoneyFund#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2"
+  }
+}

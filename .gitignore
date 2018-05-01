@@ -1,0 +1,6 @@
+.vscode
+node_modules
+npm-debug.log
+debug.log
+.jsbeautify*
+funds_holdings
