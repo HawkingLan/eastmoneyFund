@@ -1,45 +1,35 @@
+const dataServ = require('./getData');
 const fundServ = require('./fundServ');
 const fundList = require('./fundList');
+const fs = require('fs');
 let list = [].concat(fundList);
 let limit = 10;
 
-const fs = require('fs');
-fundServ.reqTopTen(list[0]).then(res => {
-    fs.writeFile(`${list[0].id}-${list[0].name}.json`, JSON.stringify(res));    
-});
 // fetch data
-// let promises = list.splice(0, limit).map(item => {
-//     return fundServ.reqScale(item);
-// });
-
-// let _cache = [];
-// list.reduce((last, item, index) => {
-//     return last
-//         .then(() => Promise.race(promises))
-//         .catch(e => {
-//             throw e;
-//         })
-//         .then(res => {
-//             let { id, name, scale, promise } = res;
-//             console.log(`第${index + 1}个基金 ${name}的规模为: ${scale}亿元`)
-//             _cache.push({
-//                 id,
-//                 name,
-//                 scale
-//             });
-//             const idx = promises.findIndex(pro => pro === promise);
-//             promises.splice(idx, 1);
-//             promises.push(fundServ.reqScale(item));
-//         })
-// }, Promise.resolve()).then(() => {
-//     return Promise.all(promises)
-//         .then(rets => {
-//             rets.forEach(({id, name, scale}) => {
-//                 _cache.push({
-//                     id,
-//                     name,
-//                     scale
-//                 });
-//             });
-//         });
-// }).then(() => console.log(_cache));
+const topTenReq = dataServ.createConcurrency(
+    list,
+    limit,
+    (res, ret, ori) => {
+        let { id, name, scale, promise } = res;
+        ret.push({
+            id,
+            name,
+            scale
+        });
+        console.log(`基金规模获取已完成：${Math.round(ret.length / (ori.length + limit) * 10000) / 100}%`);
+    },
+    item => fundServ.reqScale(item)
+);
+topTenReq.then(fund => {
+    fs.writeFile('./funds_holdings/scales.json', JSON.stringify(fund));
+    let count = 0;
+    dataServ.createConcurrency(
+        fund,
+        limit,
+        (res, ret, ori) => {
+            fs.writeFile(`./funds_holdings/${res.id}-${res.name}.json`, JSON.stringify(res.topten));
+            console.log(`基金持仓获取已完成：${Math.round(++count / (fund.length + limit) * 10000) / 100}%`)
+        },
+        item => fundServ.reqTopTen(item)
+    )
+});

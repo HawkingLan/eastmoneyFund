@@ -59,10 +59,12 @@ const reqTopTen = fund => {
                 eval(data);
                 let $ = load.loadHtml(apidata.content);
                 let topten = getTopTen($);
-                console.log(topten);
-                resolve(topten);
-                // let json = load.loadJson(data);
-                // resolve(json);
+                resolve({
+                    id: fund.id,
+                    name: fund.name,
+                    topten,
+                    promise
+                });
             });
         })
     });
@@ -72,6 +74,5 @@ const reqTopTen = fund => {
 
 module.exports = {
     reqScale,
-    reqTopTen,
-    getTopTen
+    reqTopTen
 };
