@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #app {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+<script src="./node_modules/echarts/dist/echarts.js"></script>
+<script src="./calcFundsData.js"></script>
+<script>
+    var chart = echarts.init(document.getElementById('app'));
+    var xhr = new XMLHttpRequest();
+    var axisData = [];
+    var data = [];
+    Object.keys(fundData).forEach(id => {
+        var item = fundData[id];
+        if (item.value) {
+            data.push({
+                id: id,
+                name: item.name,
+                value: Math.round(item.value)
+            })
+        }
+    });
+    data.sort(function (a, b) {
+        return b.value - a.value;
+    });
+    // data = data.splice(0, 100);
+    axisData = data.map(item => item.name);
+
+    var option = {
+        tooltip: {
+            show: true,
+            trigger: 'axis',
+            padding: 12,
+            formatter: function(param) {
+                var data = param[0].data;
+                return `<div>股票代码：${data.id}</div>
+                        <div>股票名称：${data.name}</div>
+                        <div>持仓市值：${data.value}万元</div>`;
+            }
+        },
+        xAxis: [{
+            type: 'category',
+            name: '股票代码',
+            data: axisData,
+            
+            axisLabel: {
+                rotate: 40
+            },
+            axisTick: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            }
+        }],
+        yAxis: [{
+            type: 'value',
+            name: '持仓市值（万元）',
+            axisTick: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            }
+        }],
+        series: [{
+            type: 'bar',
+            data: data
+        }]
+    };
+    chart.setOption(option);
+</script>
+
+</html>
